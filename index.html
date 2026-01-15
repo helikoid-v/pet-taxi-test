@@ -1135,8 +1135,8 @@
             
             <div class="form-group">
                 <label class="form-label" for="petType">Вид животного</label>
-                <select id="petType" class="form-select">
-                    <option value="" disabled selected>Выберите вид</option>
+                <select id="petType" class="form-select" required>
+                    <option value="" disabled selected hidden>Выберите вид</option>
                     <option value="dog">Собака</option>
                     <option value="cat">Кошка</option>
                     <option value="bird">Птица</option>
@@ -1149,8 +1149,8 @@
             
             <div class="form-group">
                 <label class="form-label" for="petSize">Размер животного</label>
-                <select id="petSize" class="form-select">
-                    <option value="" disabled selected>Выберите размер</option>
+                <select id="petSize" class="form-select" required>
+                    <option value="" disabled selected hidden>Выберите размер</option>
                     <option value="small">Маленький (вес до 10 кг, рост до 40 см)</option>
                     <option value="medium">Средний (вес 10-20 кг, рост 40-55 см)</option>
                     <option value="large">Большой (вес от 20 кг, рост выше 55 см)</option>
@@ -1159,8 +1159,8 @@
             
             <div class="form-group">
                 <label class="form-label" for="petCarrier">Средство перевозки</label>
-                <select id="petCarrier" class="form-select">
-                    <option value="" disabled selected>Выберите средство</option>
+                <select id="petCarrier" class="form-select" required>
+                    <option value="" disabled selected hidden>Выберите средство</option>
                     <option value="carrier">Переноска</option>
                     <option value="cage">Клетка</option>
                     <option value="other">Другой</option>
@@ -1171,8 +1171,8 @@
             </div>
             
             <div class="form-group">
-                <label class="form-label" for="driverComment">Комментарий по питомцу</label>
-                <textarea id="driverComment" class="form-input" rows="3" placeholder="Дополнительная информация по питомцу"></textarea>
+                <label class="form-label" for="driverComment">Комментарий по перевозке питомца</label>
+                <textarea id="driverComment" class="form-input" rows="3" placeholder="Дополнительная информация водителю"></textarea>
             </div>
         </div>
         
@@ -1197,7 +1197,7 @@
             </div>
             <div class="modal-text">
                 <p>Перевозите питомцев в переносках или клетках, собак - дополнительно в наморднике, с поводком или шлейкой.</p>
-                <p>Крупных собак (рост от 60 см) - в гамаке. Чтобы не оставить следов в салоне, используйте покрывало или пелёнку.</p>
+                <p>Крупных собак (рост от 55 см) - в гамаке. Чтобы не оставить следов в салоне, используйте покрывало или пелёнку.</p>
             </div>
             <a href="#" class="modal-link">Правила перевозки животных</a>
             <button class="btn-primary" id="okModalBtn">Хорошо</button>
