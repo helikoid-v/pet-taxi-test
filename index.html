@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Такси с питомцами</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Общие стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .page {
+            display: none;
+            min-height: 100vh;
+            background-color: white;
+            position: relative;
+        }
+        
+        .active-page {
+            display: block;
+        }
+        
+        /* Шапка страницы */
+        .header {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 14px 16px;
+            position: relative;
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-bar {
+            position: absolute;
+            top: 4px;
+            right: 16px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+        
+        .time {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .status-icon {
+            font-size: 12px;
+            color: white;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+        }
+        
+        /* Карта и маршрут */
+        .map-container {
+            padding: 8px 0;
+            background-color: #e9e9e9;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-background {
+            width: 100%;
+            height: 200px;
+            background-image: url("images/background_map.jpg");
+            background-size: contain;
+            background-position: 0 0;
+        }
+        
+        .route-points {
+            position: absolute;
+            bottom: 20px;
+            left: 16px;
+            right: 16px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .route-point {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        .route-point:last-child {
+            margin-bottom: 0;
+        }
+        
+        .point-marker {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .point-marker.start {
+            background-color: #4CAF50;
+        }
+        
+        .point-marker.end {
+            background-color: #2196F3;
+        }
+        
+        .point-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .point-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .point-address {
+            font-weight: 600;
+            font-size: 16px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .route-time-info {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            text-align: right;
+        }
+        
+        .travel-time {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .arrival-time {
+            color: #4CAF50;
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        /* Маршрут на странице 2 */
+        .route-summary {
+            padding: 16px;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #e0e0e0;
+            position: relative;
+            min-height: 90px;
+        }
+        
+        .route-price {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-weight: 700;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .route-points-inline {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .route-point-inline {
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .point-marker-inline {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-top: 6px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .point-marker-inline.start {
+            background-color: #4CAF50;
+        }
+        
+        .point-marker-inline.end {
+            background-color: #2196F3;
+        }
+        
+        .point-info-inline {
+            flex: 1;
+        }
+        
+        .point-title-inline {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .point-address-inline {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        /* Транспортные опции */
+        .transport-options {
+            padding: 16px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .option-card.selected {
+            border-color: #4CAF50;
+            background-color: #f8fff8;
+        }
+        
+        .option-info {
+            flex: 1;
+        }
+        
+        .option-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .option-desc {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .option-price {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        
+        .option-time {
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option-time i {
+            margin-right: 4px;
+        }
+        
+        .option-plus {
+            color: #4CAF50;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        
+        /* Кнопки */
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px 24px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+        
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .fixed-button {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 16px;
+            background-color: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .fixed-button.single-btn {
+            display: block;
+        }
+        
+        .settings-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+        
+        .settings-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .btn-full {
+            flex: 1;
+        }
+        
+        /* Страница настроек - изменённый контейнер */
+        .options-section {
+            padding: 0 16px;
+        }
+        
+        .options-row {
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-top: 12px; /* Добавили */
+            padding-bottom: 2px; /* Добавили */
+        }
+        
+        .options-row::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .option-btn {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background-color: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .option-btn:hover {
+            transform: scale(1.05);
+            border-color: #4CAF50;
+        }
+        
+        .option-btn.selected {
+            border-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+        
+        .option-btn i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .option-btn span {
+            font-size: 12px;
+            text-align: center;
+            color: #333;
+        }
+        
+        .option-btn.pet-btn {
+            position: relative;
+        }
+        
+        .pet-check {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .pet-check:hover {
+            background-color: #45a049;
+        }
+        
+        .pet-name {
+            font-size: 12px;
+            color: #4CAF50;
+            margin-top: 2px;
+            font-weight: 600;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Слайдеры под кнопками - отдельный ряд */
+        .sliders-row {
+            display: flex;
+            gap: 12px;
+            /* Убрали margin-top и margin-bottom */
+        }
+        
+        .slider-placeholder {
+            width: 80px;
+            height: 28px;
+            visibility: hidden;
+        }
+        
+        /* Слайдер срочной поездки - горизонтальный */
+        .urgent-container {
+            width: 80px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .urgent-toggle {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .urgent-label {
+            font-size: 11px;
+            color: #999;
+            margin-left: 2px;
+            /* Убрали margin-top */
+            transition: color 0.2s;
+        }
+        
+        .urgent-toggle.active .urgent-label {
+            color: #333;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background-color: #ccc;
+            border-radius: 20px;
+            transition: background-color 0.2s;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+        
+        .urgent-toggle.active .toggle-switch {
+            background-color: #4CAF50;
+        }
+        
+        .urgent-toggle.active .toggle-switch::after {
+            transform: translateX(20px);
+        }
+        
+        .details-list {
+            padding: 0 16px;
+        }
+        
+        .detail-item {
+            padding: 16px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-text {
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .detail-icon {
+            color: #999;
+        }
+        
+        /* Страница настройки поездки с животным */
+        .pet-form {
+            padding: 16px;
+            padding-bottom: 120px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            position: relative;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: white;
+            color: #333;
+        }
+        
+        /* Стили для placeholder в select */
+        .form-select option[value=""][disabled] {
+            color: #999;
+        }
+        
+        .form-input::placeholder {
+            color: #999;
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .additional-field {
+            margin-top: 10px;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Кнопка добавления питомца */
+        .add-pet-btn {
+            position: absolute;
+            top: 2px; /* На уровне с текстом */
+            right: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .add-pet-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        /* Всплывающая подсказка */
+        .add-pet-btn::after {
+            content: "Добавить питомца";
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 100;
+        }
+        
+        .add-pet-btn:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Модальное меню (шторка) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: flex-end;
+            z-index: 1000;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 20px 20px 0 0;
+            padding: 24px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-text {
+            line-height: 1.5;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        .modal-link {
+            color: #4CAF50;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 20px;
+        }
+        
+        .modal-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Чекбокс сохранения на странице 3 */
+        .save-checkbox-bottom {
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .checkbox-input {
+            display: none;
+        }
+        
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #4CAF50;
+            border-radius: 4px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+        }
+        
+        .checkbox-input:checked + .checkbox-custom {
+            background-color: #4CAF50;
+        }
+        
+        .checkbox-input:checked + .checkbox-custom::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+        }
+        
+        .checkbox-label {
+            font-size: 16px;
+            color: #333;
+            white-space: nowrap;
+        }
+        
+        /* Кнопка информации - уменьшенная на странице 3 */
+        .info-btn {
+            position: absolute;
+            top: 26px;
+            right: 16px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .info-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 16px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            color: #666;
+        }
+        
+        /* Утилиты */
+        .hidden {
+            display: none !important;
+        }
+        
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-10 {
+            margin-top: 10px;
+        }
+        
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+        
+        .ml-10 {
+            margin-left: 10px;
+        }
+        
+        /* Уведомление */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1001;
+            font-weight: 600;
+            animation: slideIn 0.3s, fadeOut 0.3s 2.7s;
+            max-width: 90%;
+        }
+        
+        @keyframes slideIn {
+            from { top: -100px; opacity: 0; }
+            to { top: 20px; opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* Фиксированная кнопка на странице 3 */
+        .pet-form-button {
+            display: flex;
+            align-items: center;
+        }
+        
+        .pet-confirm-btn {
+            flex: 1;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px 24px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.2s;
+            min-height: 56px;
+        }
+        
+        .pet-confirm-btn:hover {
+            background-color: #45a049;
+        }
+        
+        /* Анимация для изменений цены */
+        @keyframes priceChange {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .price-updated {
+            animation: priceChange 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Страница 1: Карта и выбор тарифа -->
+    <div id="page1" class="page active-page">
+        <div class="header">
+            <div class="status-bar">
+                <div class="time" id="currentTime">02:42</div>
+                <i class="fas fa-signal status-icon"></i>
+                <i class="fas fa-battery-three-quarters status-icon"></i>
+            </div>
+            <div class="page-title">Заказ поездки</div>
+        </div>
+        
+        <div class="map-container">
+            <div class="map-background"></div>
+            
+            <div class="route-points">
+                <div class="route-point">
+                    <div class="point-marker start"></div>
+                    <div class="point-info">
+                        <div class="point-title">Откуда</div>
+                        <div class="point-address">Метро Щёлковская</div>
+                    </div>
+                </div>
+                
+                <div class="route-point">
+                    <div class="point-marker end"></div>
+                    <div class="point-info">
+                        <div class="point-title">Куда</div>
+                        <div class="point-address">Большая Черкизовская вл125</div>
+                    </div>
+                </div>
+                
+                <div class="route-time-info">
+                    <div class="travel-time">6 мин</div>
+                    <div class="arrival-time" id="arrivalTime1">прибытие 02:50</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="transport-options">
+            <div class="section-title">ТРАНСПОРТ</div>
+            <div class="options-grid">
+                <div class="option-card" data-option="ultima" data-price="309">
+                    <div class="option-info">
+                        <div class="option-name">ULTIMA</div>
+                        <div class="option-desc">Вместе от 309 ₽</div>
+                    </div>
+                    <div>
+                        <div class="option-price" data-base-price="309">309 ₽</div>
+                        <div class="option-time"><i class="fas fa-clock"></i> 4 мин</div>
+                    </div>
+                </div>
+                
+                <div class="option-card" data-option="econom" data-price="335">
+                    <div class="option-info">
+                        <div class="option-name">Эконом</div>
+                        <div class="option-desc">Эконом от 335 ₽</div>
+                    </div>
+                    <div>
+                        <div class="option-price" data-base-price="335">335 ₽</div>
+                        <div class="option-time"><i class="fas fa-clock"></i> 4 мин</div>
+                    </div>
+                </div>
+                
+                <div class="option-card selected" data-option="comfort" data-price="357">
+                    <div class="option-info">
+                        <div class="option-name">Комфорт</div>
+                        <div class="option-desc">Комфорт от 357 ₽</div>
+                    </div>
+                    <div>
+                        <div class="option-price" data-base-price="357">357 ₽</div>
+                        <div class="option-time"><i class="fas fa-clock"></i> 2 мин</div>
+                    </div>
+                </div>
+                
+                <div class="option-card" data-option="comfort-plus" data-price="384">
+                    <div class="option-info">
+                        <div class="option-name">Комфорт+</div>
+                        <div class="option-desc">Комфорт+ от 384 ₽</div>
+                        <div class="option-plus">+27 ₽, и приедет Комфорт+</div>
+                    </div>
+                    <div>
+                        <div class="option-price" data-base-price="384">384 ₽</div>
+                        <div class="option-time"><i class="fas fa-clock"></i> 2 мин</div>
+                    </div>
+                </div>
+                
+                <div class="option-card" data-option="business" data-price="565">
+                    <div class="option-info">
+                        <div class="option-name">Business</div>
+                        <div class="option-desc">Business от 565 ₽</div>
+                    </div>
+                    <div>
+                        <div class="option-price" data-base-price="565">565 ₽</div>
+                        <div class="option-time"><i class="fas fa-clock"></i> 2 мин</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="fixed-button">
+            <button class="btn-primary btn-full" id="orderBtn">Заказать</button>
+            <button class="settings-btn" id="settingsBtn">
+                <i class="fas fa-sliders-h"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Страница 2: Настройки маршрута -->
+    <div id="page2" class="page">
+        <div class="header">
+            <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i></button>
+            <div class="page-title">Настройки поездки</div>
+            <div class="status-bar">
+                <div class="time" id="currentTime2">02:42</div>
+                <i class="fas fa-signal status-icon"></i>
+                <i class="fas fa-battery-three-quarters status-icon"></i>
+            </div>
+        </div>
+        
+        <div class="route-summary">
+            <div class="route-points-inline">
+                <div class="route-point-inline">
+                    <div class="point-marker-inline start"></div>
+                    <div class="point-info-inline">
+                        <div class="point-title-inline">Откуда</div>
+                        <div class="point-address-inline">Метро Щёлковская</div>
+                    </div>
+                </div>
+                
+                <div class="route-point-inline">
+                    <div class="point-marker-inline end"></div>
+                    <div class="point-info-inline">
+                        <div class="point-title-inline">Куда</div>
+                        <div class="point-address-inline">Большая Черкизовская вл125</div>
+                    </div>
+                </div>
+            </div>
+            <div class="route-price" id="routePriceDisplay">357 ₽</div>
+        </div>
+        
+        <div class="options-section">
+            <div class="options-row" id="optionsRow">
+                <div class="option-btn" data-option="seat1">
+                    <i class="fas fa-chair"></i>
+                    <span>Первое кресло</span>
+                </div>
+                <div class="option-btn" data-option="seat2">
+                    <i class="fas fa-chair"></i>
+                    <span>Второе кресло</span>
+                </div>
+                <div class="option-btn pet-btn" id="petOptionBtn">
+                    <i class="fas fa-paw"></i>
+                    <span>С питомцем</span>
+                    <div id="petCheck" class="pet-check hidden">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div id="petNameDisplay" class="pet-name"></div>
+                </div>
+                <div class="option-btn" data-option="bike">
+                    <i class="fas fa-bicycle"></i>
+                    <span>Велосипед</span>
+                </div>
+                <div class="option-btn" data-option="van">
+                    <i class="fas fa-shuttle-van"></i>
+                    <span>Минивэн</span>
+                </div>
+            </div>
+            
+            <!-- Отдельный ряд для слайдеров под кнопками -->
+            <div class="sliders-row">
+                <div class="slider-placeholder"></div>
+                <div class="slider-placeholder"></div>
+                <div class="urgent-container">
+                    <div id="urgentToggle" class="urgent-toggle">
+                        <div class="toggle-switch"></div>
+                        <div class="urgent-label">Срочно</div>
+                    </div>
+                </div>
+                <div class="slider-placeholder"></div>
+                <div class="slider-placeholder"></div>
+            </div>
+        </div>
+        
+        <div class="details-list">
+            <div class="detail-item">
+                <span class="detail-text">Комментарий для водителя</span>
+                <i class="fas fa-chevron-right detail-icon"></i>
+            </div>
+            <div class="detail-item">
+                <span class="detail-text">Запланировать поездку</span>
+                <i class="fas fa-chevron-right detail-icon"></i>
+            </div>
+            <div class="detail-item">
+                <span class="detail-text">Заказ другому человеку</span>
+                <i class="fas fa-chevron-right detail-icon"></i>
+            </div>
+            <div class="detail-item">
+                <span class="detail-text">Специальные возможности</span>
+                <i class="fas fa-chevron-right detail-icon"></i>
+            </div>
+        </div>
+        
+        <div class="fixed-button single-btn">
+            <button class="btn-primary" id="confirmSettingsBtn">Заказать</button>
+        </div>
+    </div>
+    
+    <!-- Страница 3: Карточка питомца -->
+    <div id="page3" class="page">
+        <div class="header">
+            <button class="back-btn" id="backFromPetBtn"><i class="fas fa-arrow-left"></i></button>
+            <div class="page-title">Перевозка питомца</div>
+            <div class="status-bar">
+                <div class="time" id="currentTime3">02:42</div>
+                <i class="fas fa-signal status-icon"></i>
+                <i class="fas fa-battery-three-quarters status-icon"></i>
+            </div>
+            <button class="info-btn" id="infoBtn"><i class="fas fa-info"></i></button>
+        </div>
+        
+        <div class="pet-form">
+            <div class="form-group">
+                <label class="form-label" for="petName">Имя питомца
+                    <button class="add-pet-btn" id="addPetBtn" title="Добавить питомца">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </label>
+                <input type="text" id="petName" class="form-input" placeholder="Введите имя питомца">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="petType">Вид животного</label>
+                <select id="petType" class="form-select">
+                    <option value="" disabled selected>Выберите вид</option>
+                    <option value="dog">Собака</option>
+                    <option value="cat">Кошка</option>
+                    <option value="bird">Птица</option>
+                    <option value="other">Другой</option>
+                </select>
+                <div id="otherTypeField" class="additional-field hidden">
+                    <input type="text" id="otherType" class="form-input" placeholder="Укажите вид животного">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="petSize">Размер животного</label>
+                <select id="petSize" class="form-select">
+                    <option value="" disabled selected>Выберите размер</option>
+                    <option value="small">Маленький (вес до 10 кг, рост до 40 см)</option>
+                    <option value="medium">Средний (вес 10-20 кг, рост 40-55 см)</option>
+                    <option value="large">Большой (вес от 20 кг, рост выше 55 см)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="petCarrier">Средство перевозки</label>
+                <select id="petCarrier" class="form-select">
+                    <option value="" disabled selected>Выберите средство</option>
+                    <option value="carrier">Переноска</option>
+                    <option value="cage">Клетка</option>
+                    <option value="other">Другой</option>
+                </select>
+                <div id="otherCarrierField" class="additional-field hidden">
+                    <input type="text" id="otherCarrier" class="form-input" placeholder="Укажите средство перевозки">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="driverComment">Комментарий по питомцу</label>
+                <textarea id="driverComment" class="form-input" rows="3" placeholder="Дополнительная информация по питомцу"></textarea>
+            </div>
+        </div>
+        
+        <div class="fixed-button pet-form-button">
+            <div class="save-checkbox-bottom">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="saveData" class="checkbox-input" checked>
+                    <span class="checkbox-custom"></span>
+                    <span class="checkbox-label">Сохранить данные</span>
+                </label>
+            </div>
+            <button class="pet-confirm-btn" id="confirmPetBtn">Подтвердить</button>
+        </div>
+    </div>
+    
+    <!-- Модальное окно с информацией -->
+    <div id="infoModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Как перевозить животных</h3>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-text">
+                <p>Перевозите питомцев в переносках или клетках, собак - дополнительно в наморднике, с поводком или шлейкой.</p>
+                <p>Крупных собак (рост от 60 см) - в гамаке. Чтобы не оставить следов в салоне, используйте покрывало или пелёнку.</p>
+            </div>
+            <a href="#" class="modal-link">Правила перевозки животных</a>
+            <button class="btn-primary" id="okModalBtn">Хорошо</button>
+        </div>
+    </div>
+
+    <!-- Уведомление о заказе -->
+    <div id="notification" class="notification hidden">Поездка заказана!</div>
+
+    <script>
+        // Элементы DOM
+        const page1 = document.getElementById('page1');
+        const page2 = document.getElementById('page2');
+        const page3 = document.getElementById('page3');
+        const orderBtn = document.getElementById('orderBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const backBtn = document.getElementById('backBtn');
+        const backFromPetBtn = document.getElementById('backFromPetBtn');
+        const petOptionBtn = document.getElementById('petOptionBtn');
+        const confirmSettingsBtn = document.getElementById('confirmSettingsBtn');
+        const confirmPetBtn = document.getElementById('confirmPetBtn');
+        const infoBtn = document.getElementById('infoBtn');
+        const infoModal = document.getElementById('infoModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const okModalBtn = document.getElementById('okModalBtn');
+        const petCheck = document.getElementById('petCheck');
+        const petNameDisplay = document.getElementById('petNameDisplay');
+        const notification = document.getElementById('notification');
+        const urgentToggle = document.getElementById('urgentToggle');
+        const routePriceDisplay = document.getElementById('routePriceDisplay');
+        const addPetBtn = document.getElementById('addPetBtn');
+        
+        // Элементы времени
+        const currentTimeElements = [
+            document.getElementById('currentTime'),
+            document.getElementById('currentTime2'),
+            document.getElementById('currentTime3')
+        ];
+        const arrivalTime1 = document.getElementById('arrivalTime1');
+        
+        // Элементы формы питомца
+        const petNameInput = document.getElementById('petName');
+        const petTypeSelect = document.getElementById('petType');
+        const otherTypeField = document.getElementById('otherTypeField');
+        const otherTypeInput = document.getElementById('otherType');
+        const petSizeSelect = document.getElementById('petSize');
+        const petCarrierSelect = document.getElementById('petCarrier');
+        const otherCarrierField = document.getElementById('otherCarrierField');
+        const otherCarrierInput = document.getElementById('otherCarrier');
+        const driverCommentInput = document.getElementById('driverComment');
+        const saveDataCheckbox = document.getElementById('saveData');
+        
+        // Данные о поездке
+        let tripData = {
+            selectedOption: 'comfort',
+            basePrice: 357,
+            finalPrice: 357,
+            withPet: false,
+            petName: '',
+            urgent: false
+        };
+        
+        // Данные о питомце
+        let petData = {
+            name: '',
+            type: '',
+            otherType: '',
+            size: '',
+            carrier: '',
+            otherCarrier: '',
+            comment: ''
+        };
+        
+        // Цены для всех опций транспорта
+        const transportPrices = {
+            'ultima': 309,
+            'econom': 335,
+            'comfort': 357,
+            'comfort-plus': 384,
+            'business': 565
+        };
+        
+        // Дополнительные стоимости
+        const PET_FEE = 150;
+        const URGENT_FEE = 100;
+        
+        // Флаг первого показа информационного окна
+        const infoShownKey = 'petInfoShown';
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Установка текущего времени и времени прибытия
+            updateTimes();
+            setInterval(updateTimes, 60000);
+            
+            // Загрузка сохраненных данных
+            loadTripData();
+            loadPetData();
+            
+            // Инициализация интерфейса
+            updatePricesOnPage1();
+            updatePetButtonDisplay();
+            updateUrgentToggle();
+            updateRoutePriceDisplay();
+            
+            // Управление навигацией по страницам
+            setupNavigation();
+            
+            // Управление формой питомца
+            setupPetForm();
+            
+            // Управление модальным окном
+            setupModal();
+            
+            // Обработчики для выбора опций на странице 1
+            setupOptionCards();
+            
+            // Обработчик для слайдера срочной поездки
+            setupUrgentToggle();
+            
+            // Обработчик для изменения вида животного
+            setupPetTypeLogic();
+        });
+        
+        // Функции
+        function updateTimes() {
+            const now = new Date();
+            
+            // Текущее время
+            const currentHours = now.getHours().toString().padStart(2, '0');
+            const currentMinutes = now.getMinutes().toString().padStart(2, '0');
+            const currentTime = `${currentHours}:${currentMinutes}`;
+            
+            // Время прибытия (текущее время + 9 минут)
+            const arrivalTime = new Date(now.getTime() + 9 * 60000);
+            const arrivalHours = arrivalTime.getHours().toString().padStart(2, '0');
+            const arrivalMinutes = arrivalTime.getMinutes().toString().padStart(2, '0');
+            const arrivalTimeStr = `${arrivalHours}:${arrivalMinutes}`;
+            
+            // Обновляем все элементы с текущим временем
+            currentTimeElements.forEach(el => {
+                if (el) el.textContent = currentTime;
+            });
+            
+            // Обновляем время прибытия на странице 1
+            if (arrivalTime1) arrivalTime1.textContent = `прибытие ${arrivalTimeStr}`;
+        }
+        
+        function setupNavigation() {
+            // Переход со страницы 1 на страницу 2 по кнопке настроек
+            settingsBtn.addEventListener('click', function() {
+                page1.classList.remove('active-page');
+                page2.classList.add('active-page');
+                
+                // Обновляем стоимость на странице 2
+                updateRoutePriceDisplay();
+            });
+            
+            // Заказ такси на странице 1
+            orderBtn.addEventListener('click', function() {
+                showNotification('Поездка заказана!');
+            });
+            
+            // Возврат со страницы 2 на страницу 1
+            backBtn.addEventListener('click', function() {
+                page2.classList.remove('active-page');
+                page1.classList.add('active-page');
+            });
+            
+            // Переход на страницу 3 (карточка питомца)
+            petOptionBtn.addEventListener('click', function(e) {
+                // Проверяем, был ли клик по самой галочке
+                if (e.target.closest('.pet-check')) {
+                    // Клик по галочке - переключаем состояние
+                    togglePetOption();
+                    return;
+                }
+                
+                // Обычный клик по кнопке - переходим на страницу 3
+                page2.classList.remove('active-page');
+                page3.classList.add('active-page');
+                
+                // Загружаем сохраненные данные в форму
+                loadPetDataToForm();
+                
+                // Проверяем, показывалось ли уже информационное окно
+                const infoAlreadyShown = localStorage.getItem(infoShownKey) === 'true';
+                
+                // Показываем модальное окно только при первом входе
+                if (!infoAlreadyShown) {
+                    setTimeout(() => {
+                        showInfoModal();
+                        localStorage.setItem(infoShownKey, 'true');
+                    }, 300);
+                }
+            });
+            
+            // Возврат со страницы 3 на страницу 2
+            backFromPetBtn.addEventListener('click', function() {
+                page3.classList.remove('active-page');
+                page2.classList.add('active-page');
+            });
+            
+            // Подтверждение настроек на странице 2
+            confirmSettingsBtn.addEventListener('click', function() {
+                showNotification('Поездка заказана!');
+                // В реальном приложении здесь была бы отправка данных на сервер
+                setTimeout(() => {
+                    page2.classList.remove('active-page');
+                    page1.classList.add('active-page');
+                }, 1000);
+            });
+            
+            // Подтверждение данных питомца
+            confirmPetBtn.addEventListener('click', function() {
+                savePetData();
+                updatePetButtonDisplay();
+                page3.classList.remove('active-page');
+                page2.classList.add('active-page');
+            });
+        }
+        
+        function setupOptionCards() {
+            const optionCards = document.querySelectorAll('.option-card');
+            optionCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Получаем выбранную опцию и базовую цену
+                    const option = this.dataset.option;
+                    const basePrice = parseInt(this.dataset.price);
+                    
+                    // Обновляем данные о поездке
+                    tripData.selectedOption = option;
+                    tripData.basePrice = basePrice;
+                    
+                    // Пересчитываем финальную цену
+                    recalculateFinalPrice();
+                    
+                    // Обновляем отображение
+                    optionCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    updatePricesOnPage1();
+                    updateRoutePriceDisplay();
+                    
+                    // Сохраняем данные
+                    saveTripData();
+                });
+            });
+        }
+        
+        function setupPetForm() {
+            // Показать/скрыть дополнительные поля при выборе "другой"
+            petTypeSelect.addEventListener('change', function() {
+                if (this.value === 'other') {
+                    otherTypeField.classList.remove('hidden');
+                } else {
+                    otherTypeField.classList.add('hidden');
+                }
+            });
+            
+            petCarrierSelect.addEventListener('change', function() {
+                if (this.value === 'other') {
+                    otherCarrierField.classList.remove('hidden');
+                } else {
+                    otherCarrierField.classList.add('hidden');
+                }
+            });
+            
+            // Активация чекбокса сохранения при вводе данных
+            const formInputs = [
+                petNameInput, petTypeSelect, otherTypeInput, 
+                petSizeSelect, petCarrierSelect, otherCarrierInput, 
+                driverCommentInput
+            ];
+            
+            formInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    saveDataCheckbox.checked = true;
+                });
+            });
+        }
+        
+        function setupModal() {
+            // Открытие модального окна по кнопке информации
+            infoBtn.addEventListener('click', showInfoModal);
+            
+            // Закрытие модального окна
+            closeModalBtn.addEventListener('click', hideInfoModal);
+            okModalBtn.addEventListener('click', hideInfoModal);
+            
+            // Закрытие при клике вне модального окна
+            infoModal.addEventListener('click', function(e) {
+                if (e.target === infoModal) {
+                    hideInfoModal();
+                }
+            });
+        }
+        
+        function setupUrgentToggle() {
+            urgentToggle.addEventListener('click', function(e) {
+                e.stopPropagation(); // Предотвращаем всплытие события
+                
+                // Переключаем состояние
+                tripData.urgent = !tripData.urgent;
+                
+                // Если включаем срочную поездку, автоматически включаем опцию с питомцем
+                if (tripData.urgent && !tripData.withPet) {
+                    tripData.withPet = true;
+                    updatePetButtonDisplay();
+                }
+                
+                // Пересчитываем финальную цену
+                recalculateFinalPrice();
+                
+                // Обновляем отображение
+                updateUrgentToggle();
+                updatePricesOnPage1();
+                updateRoutePriceDisplay();
+                
+                // Сохраняем данные
+                saveTripData();
+            });
+        }
+        
+        function setupPetTypeLogic() {
+            petTypeSelect.addEventListener('change', function() {
+                const selectedType = this.value;
+                
+                // Сбрасываем выбранный размер
+                petSizeSelect.value = "";
+                
+                // Получаем все опции размера
+                const sizeOptions = petSizeSelect.querySelectorAll('option');
+                
+                // Активируем все опции размера сначала
+                sizeOptions.forEach(option => {
+                    if (option.value !== "") {
+                        option.disabled = false;
+                        option.classList.remove('disabled');
+                    }
+                });
+                
+                // Применяем ограничения в зависимости от вида животного
+                if (selectedType === 'dog') {
+                    // Собака - все размеры доступны
+                    // Ничего не делаем, все опции уже активированы
+                } else if (selectedType === 'cat') {
+                    // Кошка - только маленький и средний
+                    const largeOption = petSizeSelect.querySelector('option[value="large"]');
+                    if (largeOption) {
+                        largeOption.disabled = true;
+                        largeOption.classList.add('disabled');
+                    }
+                } else if (selectedType === 'bird') {
+                    // Птица - только маленький, автоматически выбираем
+                    // Деактивируем средний и большой
+                    const mediumOption = petSizeSelect.querySelector('option[value="medium"]');
+                    const largeOption = petSizeSelect.querySelector('option[value="large"]');
+                    
+                    if (mediumOption) {
+                        mediumOption.disabled = true;
+                        mediumOption.classList.add('disabled');
+                    }
+                    if (largeOption) {
+                        largeOption.disabled = true;
+                        largeOption.classList.add('disabled');
+                    }
+                    
+                    // Автоматически выбираем маленький размер
+                    petSizeSelect.value = "small";
+                } else if (selectedType === 'other') {
+                    // Другой - все размеры доступны
+                    // Ничего не делаем, все опции уже активированы
+                }
+                
+                // Активируем чекбокс сохранения
+                saveDataCheckbox.checked = true;
+            });
+        }
+        
+        function updateUrgentToggle() {
+            if (tripData.urgent) {
+                urgentToggle.classList.add('active');
+            } else {
+                urgentToggle.classList.remove('active');
+            }
+        }
+        
+        function togglePetOption() {
+            // Переключаем состояние опции с питомцем
+            tripData.withPet = !tripData.withPet;
+            
+            // Если выключаем опцию с питомцем, выключаем и срочную поездку
+            if (!tripData.withPet && tripData.urgent) {
+                tripData.urgent = false;
+                updateUrgentToggle();
+            }
+            
+            // Пересчитываем финальную цену
+            recalculateFinalPrice();
+            
+            // Обновляем отображение
+            updatePetButtonDisplay();
+            updatePricesOnPage1();
+            updateRoutePriceDisplay();
+            
+            // Сохраняем данные
+            saveTripData();
+        }
+        
+        function recalculateFinalPrice() {
+            let finalPrice = tripData.basePrice;
+            
+            // Добавляем стоимость за питомца
+            if (tripData.withPet) {
+                finalPrice += PET_FEE;
+            }
+            
+            // Добавляем стоимость за срочную поездку
+            if (tripData.urgent) {
+                finalPrice += URGENT_FEE;
+            }
+            
+            tripData.finalPrice = finalPrice;
+        }
+        
+        function updatePricesOnPage1() {
+            const optionCards = document.querySelectorAll('.option-card');
+            
+            optionCards.forEach(card => {
+                const option = card.dataset.option;
+                const basePrice = parseInt(card.dataset.price);
+                const priceElement = card.querySelector('.option-price');
+                
+                // Рассчитываем финальную цену для этой опции
+                let finalPrice = basePrice;
+                
+                if (tripData.withPet) {
+                    finalPrice += PET_FEE;
+                }
+                
+                if (tripData.urgent) {
+                    finalPrice += URGENT_FEE;
+                }
+                
+                // Обновляем отображение цены
+                priceElement.textContent = `${finalPrice} ₽`;
+                
+                // Добавляем анимацию изменения цены
+                priceElement.classList.add('price-updated');
+                setTimeout(() => {
+                    priceElement.classList.remove('price-updated');
+                }, 300);
+            });
+        }
+        
+        function updateRoutePriceDisplay() {
+            routePriceDisplay.textContent = `${tripData.finalPrice} ₽`;
+            routePriceDisplay.classList.add('price-updated');
+            setTimeout(() => {
+                routePriceDisplay.classList.remove('price-updated');
+            }, 300);
+        }
+        
+        function showInfoModal() {
+            infoModal.classList.remove('hidden');
+        }
+        
+        function hideInfoModal() {
+            infoModal.classList.add('hidden');
+        }
+        
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.remove('hidden');
+            
+            // Автоматическое скрытие уведомления через 3 секунды
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+        }
+        
+        function loadTripData() {
+            const savedTripData = localStorage.getItem('tripData');
+            if (savedTripData) {
+                const data = JSON.parse(savedTripData);
+                tripData.selectedOption = data.selectedOption || 'comfort';
+                tripData.basePrice = data.basePrice || 357;
+                tripData.finalPrice = data.finalPrice || 357;
+                tripData.withPet = data.withPet || false;
+                tripData.petName = data.petName || '';
+                tripData.urgent = data.urgent || false;
+                
+                // Выбираем соответствующую опцию на странице 1
+                const optionCard = document.querySelector(`.option-card[data-option="${tripData.selectedOption}"]`);
+                if (optionCard) {
+                    document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+                    optionCard.classList.add('selected');
+                }
+            }
+        }
+        
+        function saveTripData() {
+            localStorage.setItem('tripData', JSON.stringify(tripData));
+        }
+        
+        function loadPetData() {
+            const savedPetData = localStorage.getItem('petData');
+            if (savedPetData) {
+                petData = JSON.parse(savedPetData);
+                tripData.petName = petData.name || '';
+                updatePetButtonDisplay();
+            }
+        }
+        
+        function savePetData() {
+            // Собираем данные из формы
+            petData.name = petNameInput.value.trim();
+            petData.type = petTypeSelect.value;
+            petData.otherType = otherTypeInput.value.trim();
+            petData.size = petSizeSelect.value;
+            petData.carrier = petCarrierSelect.value;
+            petData.otherCarrier = otherCarrierInput.value.trim();
+            petData.comment = driverCommentInput.value.trim();
+            
+            // Обновляем данные поездки
+            tripData.petName = petData.name;
+            tripData.withPet = true; // Если сохраняем данные, значит опция активна
+            
+            // Сохраняем в localStorage, если отмечен чекбокс
+            if (saveDataCheckbox.checked) {
+                localStorage.setItem('petData', JSON.stringify(petData));
+                saveTripData();
+            }
+            
+            // Обновляем отображение
+            updatePetButtonDisplay();
+            recalculateFinalPrice();
+            updatePricesOnPage1();
+            updateRoutePriceDisplay();
+        }
+        
+        function loadPetDataToForm() {
+            // Заполняем форму сохраненными данными
+            petNameInput.value = petData.name || '';
+            petTypeSelect.value = petData.type || '';
+            otherTypeInput.value = petData.otherType || '';
+            petSizeSelect.value = petData.size || '';
+            petCarrierSelect.value = petData.carrier || '';
+            otherCarrierInput.value = petData.otherCarrier || '';
+            driverCommentInput.value = petData.comment || '';
+            
+            // Показываем/скрываем дополнительные поля
+            if (petData.type === 'other') {
+                otherTypeField.classList.remove('hidden');
+            } else {
+                otherTypeField.classList.add('hidden');
+            }
+            
+            if (petData.carrier === 'other') {
+                otherCarrierField.classList.remove('hidden');
+            } else {
+                otherCarrierField.classList.add('hidden');
+            }
+            
+            // Активируем чекбокс сохранения, если есть данные
+            saveDataCheckbox.checked = petData.name || petData.type || petData.size || petData.carrier || petData.comment;
+            
+            // Обновляем доступные размеры в зависимости от вида животного
+            if (petData.type) {
+                // Имитируем изменение типа, чтобы применить логику ограничений
+                const event = new Event('change');
+                petTypeSelect.dispatchEvent(event);
+            }
+        }
+        
+        function updatePetButtonDisplay() {
+            if (tripData.withPet) {
+                petCheck.classList.remove('hidden');
+                
+                // Показываем имя питомца, если оно есть
+                if (tripData.petName) {
+                    petNameDisplay.textContent = tripData.petName;
+                    petNameDisplay.style.display = 'block';
+                } else {
+                    petNameDisplay.style.display = 'none';
+                }
+            } else {
+                petCheck.classList.add('hidden');
+                petNameDisplay.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
