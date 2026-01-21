@@ -317,6 +317,12 @@
             background-color: #E3CA00;
         }
         
+        .btn-primary:disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+        
         .btn-secondary {
             background-color: #f0f0f0;
             color: #333;
@@ -345,10 +351,12 @@
             border-top: 1px solid #e0e0e0;
             display: flex;
             gap: 12px;
+            align-items: center;
+            z-index: 100;
         }
         
         .fixed-button.single-btn {
-            display: block;
+            display: flex;
         }
         
         .settings-btn {
@@ -365,6 +373,7 @@
             font-size: 24px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             transition: all 0.2s;
+            flex-shrink: 0;
         }
         
         .settings-btn:hover {
@@ -387,8 +396,8 @@
             gap: 12px;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            padding-top: 12px; /* Добавили */
-            padding-bottom: 2px; /* Добавили */
+            padding-top: 12px;
+            padding-bottom: 2px;
         }
         
         .options-row::-webkit-scrollbar {
@@ -470,76 +479,6 @@
             white-space: nowrap;
         }
         
-        /* Слайдеры под кнопками - отдельный ряд */
-        .sliders-row {
-            display: flex;
-            gap: 12px;
-            /* Убрали margin-top и margin-bottom */
-        }
-        
-        .slider-placeholder {
-            flex: 0 0 auto;
-            width: 80px;
-            height: 28px;
-            visibility: hidden;
-        }
-        
-        /* Слайдер срочной поездки - горизонтальный */
-        .urgent-container {
-            width: 80px;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .urgent-toggle {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            cursor: pointer;
-        }
-        
-        .urgent-label {
-            font-size: 11px;
-            color: #999;
-            margin-left: 1px;
-            transition: color 0.2s;
-        }
-        
-        .urgent-toggle.active .urgent-label {
-            color: #333;
-        }
-        
-        .toggle-switch {
-            position: relative;
-            width: 40px;
-            height: 20px;
-            background-color: #ccc;
-            border-radius: 20px;
-            transition: background-color 0.2s;
-        }
-        
-        .toggle-switch::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 16px;
-            height: 16px;
-            background-color: white;
-            border-radius: 50%;
-            transition: transform 0.2s;
-        }
-        
-        .urgent-toggle.active .toggle-switch {
-            background-color: #FCE000;
-        }
-        
-        .urgent-toggle.active .toggle-switch::after {
-            transform: translateX(20px);
-        }
-        
         .details-list {
             padding: 0 16px;
         }
@@ -568,7 +507,9 @@
         /* Страница настройки поездки с животным */
         .pet-form {
             padding: 16px;
-            padding-bottom: 120px;
+            padding-bottom: 100px;
+            overflow-y: auto;
+            max-height: calc(100vh - 180px);
         }
         
         .form-group {
@@ -592,6 +533,21 @@
             font-size: 16px;
             background-color: white;
             color: #333;
+        }
+        
+        .form-input.error, .form-select.error {
+            border-color: #ff4444;
+        }
+        
+        .error-message {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
         }
         
         /* Стили для placeholder в select */
@@ -618,15 +574,89 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Кнопка добавления питомца */
-        .add-pet-btn {
+        /* Иконка сохранения на странице 3 */
+        .save-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #FCE000;
+            color: #21201F;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            flex-shrink: 0;
+            position: relative;
+        }
+        
+        .save-btn.inactive {
+            background-color: #f0f0f0;
+            color: #666;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Всплывающая подсказка для кнопки сохранения */
+        .save-btn::after {
+            content: "Сохранить для следующих заказов";
             position: absolute;
-            top: 2px; /* На уровне с текстом */
-            right: 0;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            z-index: 100;
+        }
+        
+        .save-btn:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Кнопка добавления питомца на странице 3 */
+        .add-pet-btn-bottom {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            color: #666;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .add-pet-btn-bottom:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Кнопка информации - уменьшенная на странице 3 */
+        .info-btn {
+            position: absolute;
+            top: 26px;
+            right: 16px;
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background-color: white;
+            background-color: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -636,35 +666,86 @@
             font-size: 12px;
         }
         
-        .add-pet-btn:hover {
+        .info-btn:hover {
             background-color: #e0e0e0;
         }
         
-        /* Всплывающая подсказка */
-        .add-pet-btn::after {
-            content: "Добавить питомца";
+        .back-btn {
             position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s, visibility 0.2s;
-            z-index: 100;
+            top: 20px;
+            left: 16px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            color: #666;
         }
         
-        .add-pet-btn:hover::after {
-            opacity: 1;
-            visibility: visible;
+        /* Иконка срочной поездки */
+        .urgent-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            color: #666;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
         
-        /* Модальное меню (шторка) */
+        .urgent-btn.selected {
+            background-color: #FCE000;
+            color: #21201F;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .urgent-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Страница успешного заказа */
+        .success-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+            min-height: calc(100vh - 64px);
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: #4CAF50;
+            margin-bottom: 24px;
+        }
+        
+        .success-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #333;
+        }
+        
+        .success-text {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 32px;
+            max-width: 300px;
+        }
+        
+        /* Модальное окно (шторка) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -725,89 +806,6 @@
             text-decoration: underline;
         }
         
-        /* Чекбокс сохранения на странице 3 */
-        .save-checkbox-bottom {
-            display: flex;
-            align-items: center;
-            margin-right: 12px;
-        }
-        
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        
-        .checkbox-input {
-            display: none;
-        }
-        
-        .checkbox-custom {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #FCE000;
-            border-radius: 4px;
-            margin-right: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: white;
-        }
-        
-        .checkbox-input:checked + .checkbox-custom {
-            background-color: #FCE000;
-        }
-        
-        .checkbox-input:checked + .checkbox-custom::after {
-            content: '✓';
-            color: #21201F;
-            font-size: 14px;
-        }
-        
-        .checkbox-label {
-            font-size: 16px;
-            color: #333;
-            white-space: nowrap;
-        }
-        
-        /* Кнопка информации - уменьшенная на странице 3 */
-        .info-btn {
-            position: absolute;
-            top: 26px;
-            right: 16px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: none;
-            color: #666;
-            font-size: 12px;
-        }
-        
-        .info-btn:hover {
-            background-color: #e0e0e0;
-        }
-        
-        .back-btn {
-            position: absolute;
-            top: 20px;
-            left: 16px;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: none;
-            color: #666;
-        }
-        
         /* Утилиты */
         .hidden {
             display: none !important;
@@ -838,58 +836,6 @@
             margin-left: 10px;
         }
         
-        /* Уведомление */
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #FCE000;
-            color: #21201F;
-            padding: 16px 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 1001;
-            font-weight: 600;
-            animation: slideIn 0.3s, fadeOut 0.3s 2.7s;
-            max-width: 90%;
-        }
-        
-        @keyframes slideIn {
-            from { top: -100px; opacity: 0; }
-            to { top: 20px; opacity: 1; }
-        }
-        
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        
-        /* Фиксированная кнопка на странице 3 */
-        .pet-form-button {
-            display: flex;
-            align-items: center;
-        }
-        
-        .pet-confirm-btn {
-            flex: 1;
-            background-color: #FCE000;
-            color: #21201F;
-            border: none;
-            border-radius: 8px;
-            padding: 16px 24px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            transition: background-color 0.2s;
-            min-height: 56px;
-        }
-        
-        .pet-confirm-btn:hover {
-            background-color: #FCE000;
-        }
-        
         /* Анимация для изменений цены */
         @keyframes priceChange {
             0% { transform: scale(1); }
@@ -899,6 +845,36 @@
         
         .price-updated {
             animation: priceChange 0.3s ease-in-out;
+        }
+        
+        /* Адаптация для мобильных устройств */
+        @media (max-width: 500px) {
+            .fixed-button {
+                padding: 12px 16px;
+            }
+            
+            .settings-btn, .urgent-btn, .save-btn, .add-pet-btn-bottom {
+                width: 52px;
+                height: 52px;
+                font-size: 22px;
+            }
+            
+            .pet-form {
+                padding-bottom: 90px;
+                max-height: calc(100vh - 170px);
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .settings-btn, .urgent-btn, .save-btn, .add-pet-btn-bottom {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
+            }
+            
+            .pet-form {
+                padding-bottom: 85px;
+            }
         }
     </style>
 </head>
@@ -935,7 +911,7 @@
                 </div>
                 
                 <div class="route-time-info">
-                    <div class="travel-time">6 мин</div>
+                    <div class="travel-time" id="travelTime">6 мин</div>
                     <div class="arrival-time" id="arrivalTime1">прибытие 02:50</div>
                 </div>
             </div>
@@ -1070,20 +1046,6 @@
                     <span>Минивэн</span>
                 </div>
             </div>
-            
-            <!-- Отдельный ряд для слайдеров под кнопками -->
-            <div class="sliders-row">
-                <div class="slider-placeholder"></div>
-                <div class="slider-placeholder"></div>
-                <div class="urgent-container">
-                    <div id="urgentToggle" class="urgent-toggle">
-                        <div class="toggle-switch"></div>
-                        <div class="urgent-label">Срочно</div>
-                    </div>
-                </div>
-                <div class="slider-placeholder"></div>
-                <div class="slider-placeholder"></div>
-            </div>
         </div>
         
         <div class="details-list">
@@ -1106,7 +1068,13 @@
         </div>
         
         <div class="fixed-button single-btn">
-            <button class="btn-primary" id="confirmSettingsBtn">Заказать</button>
+            <button class="urgent-btn hidden" id="urgentBtn" title="Срочная поездка">
+                <i class="fas fa-bolt"></i>
+            </button>
+            <button class="settings-btn hidden" id="petSettingsBtn">
+                <i class="fas fa-sliders-h"></i>
+            </button>
+            <button class="btn-primary btn-full" id="confirmSettingsBtn">Заказать</button>
         </div>
     </div>
     
@@ -1125,15 +1093,6 @@
         
         <div class="pet-form">
             <div class="form-group">
-                <label class="form-label" for="petName">Имя питомца
-                    <button class="add-pet-btn" id="addPetBtn" title="Добавить питомца">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </label>
-                <input type="text" id="petName" class="form-input" placeholder="Введите имя питомца">
-            </div>
-            
-            <div class="form-group">
                 <label class="form-label" for="petType">Вид животного</label>
                 <select id="petType" class="form-select" required>
                     <option value="" disabled selected hidden>Выберите вид</option>
@@ -1142,6 +1101,7 @@
                     <option value="bird">Птица</option>
                     <option value="other">Другой</option>
                 </select>
+                <div class="error-message" id="petTypeError">Пожалуйста, выберите вид животного</div>
                 <div id="otherTypeField" class="additional-field hidden">
                     <input type="text" id="otherType" class="form-input" placeholder="Укажите вид животного">
                 </div>
@@ -1155,6 +1115,7 @@
                     <option value="medium">Средний (вес 10-20 кг, рост 40-55 см)</option>
                     <option value="large">Большой (вес от 20 кг, рост выше 55 см)</option>
                 </select>
+                <div class="error-message" id="petSizeError">Пожалуйста, выберите размер животного</div>
             </div>
             
             <div class="form-group">
@@ -1174,17 +1135,42 @@
                 <label class="form-label" for="driverComment">Комментарий по перевозке питомца</label>
                 <textarea id="driverComment" class="form-input" rows="3" placeholder="Дополнительная информация водителю"></textarea>
             </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="petName">Имя питомца</label>
+                <input type="text" id="petName" class="form-input" placeholder="Введите имя питомца (для удобства сохранения)">
+            </div>
         </div>
         
         <div class="fixed-button pet-form-button">
-            <div class="save-checkbox-bottom">
-                <label class="checkbox-container">
-                    <input type="checkbox" id="saveData" class="checkbox-input" checked>
-                    <span class="checkbox-custom"></span>
-                    <span class="checkbox-label">Сохранить</span>
-                </label>
+            <button class="save-btn" id="saveBtn" title="Сохранить для следующих заказов">
+                <i class="fas fa-bookmark"></i>
+            </button>
+            <button class="btn-primary btn-full" id="confirmPetBtn">Заказать</button>
+            <button class="add-pet-btn-bottom" id="addPetBtnBottom" title="Добавить питомца">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Страница 4: Успешный заказ -->
+    <div id="page4" class="page">
+        <div class="header">
+            <div class="page-title">Заказ выполнен</div>
+            <div class="status-bar">
+                <div class="time" id="currentTime4">02:42</div>
+                <i class="fas fa-signal status-icon"></i>
+                <i class="fas fa-battery-three-quarters status-icon"></i>
             </div>
-            <button class="pet-confirm-btn" id="confirmPetBtn">Подтвердить</button>
+        </div>
+        
+        <div class="success-page">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1 class="success-title">Поездка заказана!</h1>
+            <p class="success-text">Ваш заказ успешно принят. Водитель скоро прибудет к указанному адресу.</p>
+            <button class="btn-primary" id="closeSuccessBtn">Вернуться на главную</button>
         </div>
     </div>
     
@@ -1205,51 +1191,53 @@
         </div>
     </div>
 
-    <!-- Уведомление о заказе -->
-    <div id="notification" class="notification hidden">Поездка заказана!</div>
-
     <script>
         // Элементы DOM
         const page1 = document.getElementById('page1');
         const page2 = document.getElementById('page2');
         const page3 = document.getElementById('page3');
+        const page4 = document.getElementById('page4');
         const orderBtn = document.getElementById('orderBtn');
         const settingsBtn = document.getElementById('settingsBtn');
         const backBtn = document.getElementById('backBtn');
         const backFromPetBtn = document.getElementById('backFromPetBtn');
         const petOptionBtn = document.getElementById('petOptionBtn');
+        const petSettingsBtn = document.getElementById('petSettingsBtn');
         const confirmSettingsBtn = document.getElementById('confirmSettingsBtn');
         const confirmPetBtn = document.getElementById('confirmPetBtn');
+        const closeSuccessBtn = document.getElementById('closeSuccessBtn');
         const infoBtn = document.getElementById('infoBtn');
         const infoModal = document.getElementById('infoModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
         const okModalBtn = document.getElementById('okModalBtn');
         const petCheck = document.getElementById('petCheck');
         const petNameDisplay = document.getElementById('petNameDisplay');
-        const notification = document.getElementById('notification');
-        const urgentToggle = document.getElementById('urgentToggle');
-        const routePriceDisplay = document.getElementById('routePriceDisplay');
-        const addPetBtn = document.getElementById('addPetBtn');
+        const urgentBtn = document.getElementById('urgentBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const addPetBtnBottom = document.getElementById('addPetBtnBottom');
         
         // Элементы времени
         const currentTimeElements = [
             document.getElementById('currentTime'),
             document.getElementById('currentTime2'),
-            document.getElementById('currentTime3')
+            document.getElementById('currentTime3'),
+            document.getElementById('currentTime4')
         ];
         const arrivalTime1 = document.getElementById('arrivalTime1');
+        const travelTime = document.getElementById('travelTime');
         
-        // Элементы формы питомца
-        const petNameInput = document.getElementById('petName');
+        // Элементы формы питомца (в новом порядке)
         const petTypeSelect = document.getElementById('petType');
+        const petTypeError = document.getElementById('petTypeError');
         const otherTypeField = document.getElementById('otherTypeField');
         const otherTypeInput = document.getElementById('otherType');
         const petSizeSelect = document.getElementById('petSize');
+        const petSizeError = document.getElementById('petSizeError');
         const petCarrierSelect = document.getElementById('petCarrier');
         const otherCarrierField = document.getElementById('otherCarrierField');
         const otherCarrierInput = document.getElementById('otherCarrier');
         const driverCommentInput = document.getElementById('driverComment');
-        const saveDataCheckbox = document.getElementById('saveData');
+        const petNameInput = document.getElementById('petName');
         
         // Данные о поездке
         let tripData = {
@@ -1272,6 +1260,9 @@
             comment: ''
         };
         
+        // Состояние сохранения данных питомца
+        let savePetDataEnabled = true;
+        
         // Цены для всех опций транспорта
         const transportPrices = {
             'ultima': 309,
@@ -1287,22 +1278,30 @@
         
         // Флаг первого показа информационного окна
         const infoShownKey = 'petInfoShown';
+        let infoAlreadyShown = localStorage.getItem(infoShownKey) === 'true';
+        
+        // Таймер для обновления времени
+        let timeUpdateInterval;
         
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
             // Установка текущего времени и времени прибытия
             updateTimes();
-            setInterval(updateTimes, 60000);
+            timeUpdateInterval = setInterval(updateTimes, 60000);
             
             // Загрузка сохраненных данных
             loadTripData();
             loadPetData();
             
+            // Загрузка состояния сохранения данных
+            loadSaveState();
+            
             // Инициализация интерфейса
             updatePricesOnPage1();
             updatePetButtonDisplay();
-            updateUrgentToggle();
+            updateUrgentButton();
             updateRoutePriceDisplay();
+            updateSaveButton();
             
             // Управление навигацией по страницам
             setupNavigation();
@@ -1316,11 +1315,17 @@
             // Обработчики для выбора опций на странице 1
             setupOptionCards();
             
-            // Обработчик для слайдера срочной поездки
-            setupUrgentToggle();
+            // Обработчик для срочной поездки
+            setupUrgentButton();
             
             // Обработчик для изменения вида животного
             setupPetTypeLogic();
+            
+            // Обработчик для кнопки сохранения
+            setupSaveButton();
+            
+            // Проверка валидации формы
+            checkPetFormValidity();
         });
         
         // Функции
@@ -1359,7 +1364,8 @@
             
             // Заказ такси на странице 1
             orderBtn.addEventListener('click', function() {
-                showNotification('Поездка заказана!');
+                page1.classList.remove('active-page');
+                page4.classList.add('active-page');
             });
             
             // Возврат со страницы 2 на страницу 1
@@ -1368,7 +1374,7 @@
                 page1.classList.add('active-page');
             });
             
-            // Переход на страницу 3 (карточка питомца)
+            // Переключение опции с питомцем на странице 2
             petOptionBtn.addEventListener('click', function(e) {
                 // Проверяем, был ли клик по самой галочке
                 if (e.target.closest('.pet-check')) {
@@ -1377,47 +1383,60 @@
                     return;
                 }
                 
-                // Обычный клик по кнопке - переходим на страницу 3
+                // Обычный клик по кнопке - переключаем опцию с питомцем
+                togglePetOption();
+            });
+            
+            // Переход на страницу 3 по кнопке настроек питомца
+            petSettingsBtn.addEventListener('click', function() {
                 page2.classList.remove('active-page');
                 page3.classList.add('active-page');
                 
                 // Загружаем сохраненные данные в форму
                 loadPetDataToForm();
                 
-                // Проверяем, показывалось ли уже информационное окно
-                const infoAlreadyShown = localStorage.getItem(infoShownKey) === 'true';
-                
                 // Показываем модальное окно только при первом входе
                 if (!infoAlreadyShown) {
                     setTimeout(() => {
                         showInfoModal();
                         localStorage.setItem(infoShownKey, 'true');
+                        infoAlreadyShown = true;
                     }, 300);
                 }
             });
             
-            // Возврат со страницы 3 на страницу 2
+            // Возврат со страницы 3 на страницу 2 с сохранением данных при валидации
             backFromPetBtn.addEventListener('click', function() {
+                if (validatePetForm()) {
+                    // Если форма валидна, сохраняем данные
+                    savePetDataFromForm();
+                } else {
+                    // Если форма невалидна, сбрасываем данные
+                    resetPetForm();
+                }
                 page3.classList.remove('active-page');
                 page2.classList.add('active-page');
             });
             
-            // Подтверждение настроек на странице 2
+            // Подтверждение настроек на странице 2 (переход на страницу 4)
             confirmSettingsBtn.addEventListener('click', function() {
-                showNotification('Поездка заказана!');
-                // В реальном приложении здесь была бы отправка данных на сервер
-                setTimeout(() => {
-                    page2.classList.remove('active-page');
-                    page1.classList.add('active-page');
-                }, 1000);
+                page2.classList.remove('active-page');
+                page4.classList.add('active-page');
             });
             
-            // Подтверждение данных питомца
+            // Заказ на странице 3 (переход на страницу 4)
             confirmPetBtn.addEventListener('click', function() {
-                savePetData();
-                updatePetButtonDisplay();
-                page3.classList.remove('active-page');
-                page2.classList.add('active-page');
+                if (validatePetForm()) {
+                    savePetDataFromForm();
+                    page3.classList.remove('active-page');
+                    page4.classList.add('active-page');
+                }
+            });
+            
+            // Закрытие страницы успешного заказа
+            closeSuccessBtn.addEventListener('click', function() {
+                page4.classList.remove('active-page');
+                page1.classList.add('active-page');
             });
         }
         
@@ -1456,6 +1475,8 @@
                 } else {
                     otherTypeField.classList.add('hidden');
                 }
+                applyPetTypeRestrictions(true); // Сбрасываем размер только при ручном изменении типа
+                checkPetFormValidity();
             });
             
             petCarrierSelect.addEventListener('change', function() {
@@ -1466,17 +1487,22 @@
                 }
             });
             
-            // Активация чекбокса сохранения при вводе данных
+            // Валидация при изменении полей
             const formInputs = [
-                petNameInput, petTypeSelect, otherTypeInput, 
+                petTypeSelect, otherTypeInput, 
                 petSizeSelect, petCarrierSelect, otherCarrierInput, 
-                driverCommentInput
+                driverCommentInput, petNameInput
             ];
             
             formInputs.forEach(input => {
                 input.addEventListener('input', function() {
-                    saveDataCheckbox.checked = true;
+                    checkPetFormValidity();
                 });
+            });
+            
+            // Валидация при изменении размера
+            petSizeSelect.addEventListener('change', function() {
+                checkPetFormValidity();
             });
         }
         
@@ -1496,24 +1522,16 @@
             });
         }
         
-        function setupUrgentToggle() {
-            urgentToggle.addEventListener('click', function(e) {
-                e.stopPropagation(); // Предотвращаем всплытие события
-                
+        function setupUrgentButton() {
+            urgentBtn.addEventListener('click', function() {
                 // Переключаем состояние
                 tripData.urgent = !tripData.urgent;
-                
-                // Если включаем срочную поездку, автоматически включаем опцию с питомцем
-                if (tripData.urgent && !tripData.withPet) {
-                    tripData.withPet = true;
-                    updatePetButtonDisplay();
-                }
                 
                 // Пересчитываем финальную цену
                 recalculateFinalPrice();
                 
                 // Обновляем отображение
-                updateUrgentToggle();
+                updateUrgentButton();
                 updatePricesOnPage1();
                 updateRoutePriceDisplay();
                 
@@ -1522,67 +1540,99 @@
             });
         }
         
-        function setupPetTypeLogic() {
-            petTypeSelect.addEventListener('change', function() {
-                const selectedType = this.value;
+        function setupSaveButton() {
+            saveBtn.addEventListener('click', function() {
+                // Переключаем состояние сохранения данных
+                savePetDataEnabled = !savePetDataEnabled;
                 
-                // Сбрасываем выбранный размер
-                petSizeSelect.value = "";
+                // Обновляем отображение кнопки
+                updateSaveButton();
                 
-                // Получаем все опции размера
-                const sizeOptions = petSizeSelect.querySelectorAll('option');
-                
-                // Активируем все опции размера сначала
-                sizeOptions.forEach(option => {
-                    if (option.value !== "") {
-                        option.disabled = false;
-                        option.classList.remove('disabled');
-                    }
-                });
-                
-                // Применяем ограничения в зависимости от вида животного
-                if (selectedType === 'dog') {
-                    // Собака - все размеры доступны
-                    // Ничего не делаем, все опции уже активированы
-                } else if (selectedType === 'cat') {
-                    // Кошка - только маленький и средний
-                    const largeOption = petSizeSelect.querySelector('option[value="large"]');
-                    if (largeOption) {
-                        largeOption.disabled = true;
-                        largeOption.classList.add('disabled');
-                    }
-                } else if (selectedType === 'bird') {
-                    // Птица - только маленький, автоматически выбираем
-                    // Деактивируем средний и большой
-                    const mediumOption = petSizeSelect.querySelector('option[value="medium"]');
-                    const largeOption = petSizeSelect.querySelector('option[value="large"]');
-                    
-                    if (mediumOption) {
-                        mediumOption.disabled = true;
-                        mediumOption.classList.add('disabled');
-                    }
-                    if (largeOption) {
-                        largeOption.disabled = true;
-                        largeOption.classList.add('disabled');
-                    }
-                    
-                    // Автоматически выбираем маленький размер
-                    petSizeSelect.value = "small";
-                } else if (selectedType === 'other') {
-                    // Другой - все размеры доступны
-                    // Ничего не делаем, все опции уже активированы
-                }
-                
-                // Активируем чекбокс сохранения
-                saveDataCheckbox.checked = true;
+                // Сохраняем состояние
+                localStorage.setItem('savePetDataEnabled', savePetDataEnabled);
             });
         }
         
-        function updateUrgentToggle() {
-            if (tripData.urgent) {
-                urgentToggle.classList.add('active');
+        function setupPetTypeLogic() {
+            // Инициализируем ограничения при загрузке страницы
+            applyPetTypeRestrictions(false);
+        }
+        
+        function applyPetTypeRestrictions(resetSize = true) {
+            const selectedType = petTypeSelect.value;
+            
+            if (!selectedType) return;
+            
+            // Получаем все опции размера
+            const sizeOptions = petSizeSelect.querySelectorAll('option');
+            
+            // Активируем все опции размера сначала
+            sizeOptions.forEach(option => {
+                if (option.value !== "") {
+                    option.disabled = false;
+                }
+            });
+            
+            // Применяем ограничения в зависимости от вида животного
+            if (selectedType === 'dog') {
+                // Собака - все размеры доступны
+                // Ничего не делаем
+            } else if (selectedType === 'cat') {
+                // Кошка - только маленький и средний
+                const largeOption = petSizeSelect.querySelector('option[value="large"]');
+                if (largeOption) {
+                    largeOption.disabled = true;
+                    
+                    // Если выбран большой размер и нужно сбросить, сбрасываем
+                    if (resetSize && petSizeSelect.value === 'large') {
+                        petSizeSelect.value = '';
+                    }
+                }
+            } else if (selectedType === 'bird') {
+                // Птица - только маленький
+                const mediumOption = petSizeSelect.querySelector('option[value="medium"]');
+                const largeOption = petSizeSelect.querySelector('option[value="large"]');
+                
+                if (mediumOption) mediumOption.disabled = true;
+                if (largeOption) largeOption.disabled = true;
+                
+                // Если нужно сбросить или выбран недопустимый размер, выбираем маленький
+                if (resetSize || (petSizeSelect.value !== 'small' && petSizeSelect.value !== '')) {
+                    petSizeSelect.value = 'small';
+                }
+            } else if (selectedType === 'other') {
+                // Другой - все размеры доступны
+                // Ничего не делаем
+            }
+            
+            // При ручном изменении типа сбрасываем размер
+            if (resetSize && selectedType !== 'bird') {
+                // Для птицы уже установили маленький выше
+                petSizeSelect.value = '';
+            }
+            
+            checkPetFormValidity();
+        }
+        
+        function updateUrgentButton() {
+            if (tripData.withPet) {
+                urgentBtn.classList.remove('hidden');
+                if (tripData.urgent) {
+                    urgentBtn.classList.add('selected');
+                } else {
+                    urgentBtn.classList.remove('selected');
+                }
             } else {
-                urgentToggle.classList.remove('active');
+                urgentBtn.classList.add('hidden');
+                urgentBtn.classList.remove('selected');
+            }
+        }
+        
+        function updateSaveButton() {
+            if (savePetDataEnabled) {
+                saveBtn.classList.remove('inactive');
+            } else {
+                saveBtn.classList.add('inactive');
             }
         }
         
@@ -1591,9 +1641,16 @@
             tripData.withPet = !tripData.withPet;
             
             // Если выключаем опцию с питомцем, выключаем и срочную поездку
-            if (!tripData.withPet && tripData.urgent) {
+            if (!tripData.withPet) {
                 tripData.urgent = false;
-                updateUrgentToggle();
+                updateUrgentButton();
+            }
+            
+            // Показываем/скрываем кнопку настроек питомца
+            if (tripData.withPet) {
+                petSettingsBtn.classList.remove('hidden');
+            } else {
+                petSettingsBtn.classList.add('hidden');
             }
             
             // Пересчитываем финальную цену
@@ -1601,6 +1658,7 @@
             
             // Обновляем отображение
             updatePetButtonDisplay();
+            updateUrgentButton();
             updatePricesOnPage1();
             updateRoutePriceDisplay();
             
@@ -1670,14 +1728,37 @@
             infoModal.classList.add('hidden');
         }
         
-        function showNotification(message) {
-            notification.textContent = message;
-            notification.classList.remove('hidden');
+        function validatePetForm() {
+            let isValid = true;
             
-            // Автоматическое скрытие уведомления через 3 секунды
-            setTimeout(() => {
-                notification.classList.add('hidden');
-            }, 3000);
+            // Проверка вида животного
+            if (!petTypeSelect.value) {
+                petTypeSelect.classList.add('error');
+                petTypeError.classList.add('show');
+                isValid = false;
+            } else {
+                petTypeSelect.classList.remove('error');
+                petTypeError.classList.remove('show');
+            }
+            
+            // Проверка размера животного
+            if (!petSizeSelect.value) {
+                petSizeSelect.classList.add('error');
+                petSizeError.classList.add('show');
+                isValid = false;
+            } else {
+                petSizeSelect.classList.remove('error');
+                petSizeError.classList.remove('show');
+            }
+            
+            // Обновляем состояние кнопки подтверждения
+            confirmPetBtn.disabled = !isValid;
+            
+            return isValid;
+        }
+        
+        function checkPetFormValidity() {
+            validatePetForm();
         }
         
         function loadTripData() {
@@ -1697,6 +1778,13 @@
                     document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
                     optionCard.classList.add('selected');
                 }
+                
+                // Показываем/скрываем кнопку настроек питомца
+                if (tripData.withPet) {
+                    petSettingsBtn.classList.remove('hidden');
+                } else {
+                    petSettingsBtn.classList.add('hidden');
+                }
             }
         }
         
@@ -1713,7 +1801,14 @@
             }
         }
         
-        function savePetData() {
+        function loadSaveState() {
+            const savedSaveState = localStorage.getItem('savePetDataEnabled');
+            if (savedSaveState !== null) {
+                savePetDataEnabled = savedSaveState === 'true';
+            }
+        }
+        
+        function savePetDataFromForm() {
             // Собираем данные из формы
             petData.name = petNameInput.value.trim();
             petData.type = petTypeSelect.value;
@@ -1727,8 +1822,8 @@
             tripData.petName = petData.name;
             tripData.withPet = true; // Если сохраняем данные, значит опция активна
             
-            // Сохраняем в localStorage, если отмечен чекбокс
-            if (saveDataCheckbox.checked) {
+            // Сохраняем в localStorage, если включено сохранение данных
+            if (savePetDataEnabled) {
                 localStorage.setItem('petData', JSON.stringify(petData));
                 saveTripData();
             }
@@ -1738,6 +1833,30 @@
             recalculateFinalPrice();
             updatePricesOnPage1();
             updateRoutePriceDisplay();
+        }
+        
+        function resetPetForm() {
+            // Сбрасываем данные формы
+            petNameInput.value = '';
+            petTypeSelect.value = '';
+            otherTypeInput.value = '';
+            petSizeSelect.value = '';
+            petCarrierSelect.value = '';
+            otherCarrierInput.value = '';
+            driverCommentInput.value = '';
+            
+            // Скрываем дополнительные поля
+            otherTypeField.classList.add('hidden');
+            otherCarrierField.classList.add('hidden');
+            
+            // Сбрасываем ошибки валидации
+            petTypeSelect.classList.remove('error');
+            petTypeError.classList.remove('show');
+            petSizeSelect.classList.remove('error');
+            petSizeError.classList.remove('show');
+            
+            // Деактивируем кнопку подтверждения
+            confirmPetBtn.disabled = true;
         }
         
         function loadPetDataToForm() {
@@ -1763,15 +1882,11 @@
                 otherCarrierField.classList.add('hidden');
             }
             
-            // Активируем чекбокс сохранения, если есть данные
-            saveDataCheckbox.checked = petData.name || petData.type || petData.size || petData.carrier || petData.comment;
+            // Применяем ограничения типа животного без сброса размера
+            applyPetTypeRestrictions(false);
             
-            // Обновляем доступные размеры в зависимости от вида животного
-            if (petData.type) {
-                // Имитируем изменение типа, чтобы применить логику ограничений
-                const event = new Event('change');
-                petTypeSelect.dispatchEvent(event);
-            }
+            // Проверяем валидность формы
+            checkPetFormValidity();
         }
         
         function updatePetButtonDisplay() {
