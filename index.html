@@ -539,17 +539,6 @@
             border-color: #ff4444;
         }
         
-        .error-message {
-            color: #ff4444;
-            font-size: 14px;
-            margin-top: 5px;
-            display: none;
-        }
-        
-        .error-message.show {
-            display: block;
-        }
-        
         /* Стили для placeholder в select */
         .form-select option[value=""][disabled] {
             color: #999;
@@ -1101,7 +1090,6 @@
                     <option value="bird">Птица</option>
                     <option value="other">Другой</option>
                 </select>
-                <div class="error-message" id="petTypeError">Пожалуйста, выберите вид животного</div>
                 <div id="otherTypeField" class="additional-field hidden">
                     <input type="text" id="otherType" class="form-input" placeholder="Укажите вид животного">
                 </div>
@@ -1115,7 +1103,6 @@
                     <option value="medium">Средний (вес 10-20 кг, рост 40-55 см)</option>
                     <option value="large">Большой (вес от 20 кг, рост выше 55 см)</option>
                 </select>
-                <div class="error-message" id="petSizeError">Пожалуйста, выберите размер животного</div>
             </div>
             
             <div class="form-group">
@@ -1227,11 +1214,9 @@
         
         // Элементы формы питомца (в новом порядке)
         const petTypeSelect = document.getElementById('petType');
-        const petTypeError = document.getElementById('petTypeError');
         const otherTypeField = document.getElementById('otherTypeField');
         const otherTypeInput = document.getElementById('otherType');
         const petSizeSelect = document.getElementById('petSize');
-        const petSizeError = document.getElementById('petSizeError');
         const petCarrierSelect = document.getElementById('petCarrier');
         const otherCarrierField = document.getElementById('otherCarrierField');
         const otherCarrierInput = document.getElementById('otherCarrier');
@@ -1733,21 +1718,17 @@
             // Проверка вида животного
             if (!petTypeSelect.value) {
                 petTypeSelect.classList.add('error');
-                petTypeError.classList.add('show');
                 isValid = false;
             } else {
                 petTypeSelect.classList.remove('error');
-                petTypeError.classList.remove('show');
             }
             
             // Проверка размера животного
             if (!petSizeSelect.value) {
                 petSizeSelect.classList.add('error');
-                petSizeError.classList.add('show');
                 isValid = false;
             } else {
                 petSizeSelect.classList.remove('error');
-                petSizeError.classList.remove('show');
             }
             
             // Обновляем состояние кнопки подтверждения
@@ -1850,9 +1831,7 @@
             
             // Сбрасываем ошибки валидации
             petTypeSelect.classList.remove('error');
-            petTypeError.classList.remove('show');
             petSizeSelect.classList.remove('error');
-            petSizeError.classList.remove('show');
             
             // Деактивируем кнопку подтверждения
             confirmPetBtn.disabled = true;
