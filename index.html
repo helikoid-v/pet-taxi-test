@@ -388,6 +388,7 @@
         /* Страница настроек - изменённый контейнер */
         .options-section {
             padding: 0 16px;
+            margin-bottom: 16px; /* Добавили отступ */
         }
         
         .options-row {
@@ -502,6 +503,56 @@
         
         .detail-icon {
             color: #999;
+        }
+        
+        /* Свитчер для экстренной поездки - исправленный стиль */
+        .urgent-switch {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .switch-toggle {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+        
+        .switch-checkbox {
+            display: none;
+        }
+        
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        .switch-checkbox:checked + .switch-slider {
+            background-color: #FCE000;
+        }
+        
+        .switch-checkbox:checked + .switch-slider:before {
+            transform: translateX(22px);
         }
         
         /* Страница настройки поездки с животным */
@@ -673,33 +724,6 @@
             cursor: pointer;
             border: none;
             color: #666;
-        }
-        
-        /* Иконка срочной поездки */
-        .urgent-btn {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background-color: #f0f0f0;
-            color: #666;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 24px;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-        
-        .urgent-btn.selected {
-            background-color: #FCE000;
-            color: #21201F;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .urgent-btn:hover {
-            transform: translateY(-2px);
         }
         
         /* Страница успешного заказа */
@@ -1038,6 +1062,15 @@
         </div>
         
         <div class="details-list">
+            <!-- Строка для экстренной поездки - появляется только при выборе опции с питомцем -->
+            <div class="detail-item hidden" id="urgentTripItem">
+                <span class="detail-text">Экстренная поездка</span>
+                <label class="switch-toggle">
+                    <input type="checkbox" class="switch-checkbox" id="urgentSwitch">
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+            
             <div class="detail-item">
                 <span class="detail-text">Комментарий для водителя</span>
                 <i class="fas fa-chevron-right detail-icon"></i>
@@ -1056,14 +1089,11 @@
             </div>
         </div>
         
-        <div class="fixed-button single-btn">
-            <button class="urgent-btn hidden" id="urgentBtn" title="Срочная поездка">
-                <i class="fas fa-bolt"></i>
-            </button>
+        <div class="fixed-button">
+            <button class="btn-primary btn-full" id="confirmSettingsBtn">Заказать</button>
             <button class="settings-btn hidden" id="petSettingsBtn">
                 <i class="fas fa-sliders-h"></i>
             </button>
-            <button class="btn-primary btn-full" id="confirmSettingsBtn">Заказать</button>
         </div>
     </div>
     
@@ -1198,7 +1228,8 @@
         const okModalBtn = document.getElementById('okModalBtn');
         const petCheck = document.getElementById('petCheck');
         const petNameDisplay = document.getElementById('petNameDisplay');
-        const urgentBtn = document.getElementById('urgentBtn');
+        const urgentSwitch = document.getElementById('urgentSwitch');
+        const urgentTripItem = document.getElementById('urgentTripItem');
         const saveBtn = document.getElementById('saveBtn');
         const addPetBtnBottom = document.getElementById('addPetBtnBottom');
         
@@ -1283,7 +1314,7 @@
             // Инициализация интерфейса
             updatePricesOnPage1();
             updatePetButtonDisplay();
-            updateUrgentButton();
+            updateUrgentSwitchDisplay();
             updateRoutePriceDisplay();
             updateSaveButton();
             
@@ -1299,8 +1330,8 @@
             // Обработчики для выбора опций на странице 1
             setupOptionCards();
             
-            // Обработчик для срочной поездки
-            setupUrgentButton();
+            // Обработчик для свитчера экстренной поездки
+            setupUrgentSwitch();
             
             // Обработчик для изменения вида животного
             setupPetTypeLogic();
@@ -1506,16 +1537,15 @@
             });
         }
         
-        function setupUrgentButton() {
-            urgentBtn.addEventListener('click', function() {
+        function setupUrgentSwitch() {
+            urgentSwitch.addEventListener('change', function() {
                 // Переключаем состояние
-                tripData.urgent = !tripData.urgent;
+                tripData.urgent = this.checked;
                 
                 // Пересчитываем финальную цену
                 recalculateFinalPrice();
                 
                 // Обновляем отображение
-                updateUrgentButton();
                 updatePricesOnPage1();
                 updateRoutePriceDisplay();
                 
@@ -1598,17 +1628,13 @@
             checkPetFormValidity();
         }
         
-        function updateUrgentButton() {
+        function updateUrgentSwitchDisplay() {
             if (tripData.withPet) {
-                urgentBtn.classList.remove('hidden');
-                if (tripData.urgent) {
-                    urgentBtn.classList.add('selected');
-                } else {
-                    urgentBtn.classList.remove('selected');
-                }
+                urgentTripItem.classList.remove('hidden');
+                urgentSwitch.checked = tripData.urgent;
             } else {
-                urgentBtn.classList.add('hidden');
-                urgentBtn.classList.remove('selected');
+                urgentTripItem.classList.add('hidden');
+                urgentSwitch.checked = false;
             }
         }
         
@@ -1627,7 +1653,6 @@
             // Если выключаем опцию с питомцем, выключаем и срочную поездку
             if (!tripData.withPet) {
                 tripData.urgent = false;
-                updateUrgentButton();
             }
             
             // Показываем/скрываем кнопку настроек питомца
@@ -1637,12 +1662,14 @@
                 petSettingsBtn.classList.add('hidden');
             }
             
+            // Обновляем отображение свитчера экстренной поездки
+            updateUrgentSwitchDisplay();
+            
             // Пересчитываем финальную цену
             recalculateFinalPrice();
             
             // Обновляем отображение
             updatePetButtonDisplay();
-            updateUrgentButton();
             updatePricesOnPage1();
             updateRoutePriceDisplay();
             
